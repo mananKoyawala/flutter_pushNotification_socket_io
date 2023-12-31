@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:socket_io_basics/SocketUtils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/io.dart';
 
@@ -28,13 +29,19 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final controller = TextEditingController();
   WebSocketChannel? channel;
+  String status = '';
+  SocketUtils socketUtils = SocketUtils();
+  List<String> message = [];
 
   @override
   void initState() {
     super.initState();
-    connectSocketChannel();
+    // connectSocketChannel();
   }
 
+  // This is Writtern Script Call
+
+  // This is automatic
   connectSocketChannel() {
     // Both are working well
     channel = IOWebSocketChannel.connect('wss://echo.websocket.events');
@@ -60,8 +67,9 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            // mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const SizedBox(height: 45),
               TextFormField(
                 controller: controller,
                 decoration: const InputDecoration(border: OutlineInputBorder()),
@@ -72,27 +80,56 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (controller.text.isEmpty) {
                       return;
                     }
-                    sendMessage();
+                    // sendMessage();
+                    socketUtils.sendMessage(
+                        controller.text, connectionListner, messageListner);
                   },
                   child: const Text(
                     'Click Here',
                     style: TextStyle(fontSize: 18),
                   )),
               const SizedBox(height: 30),
-              StreamBuilder(
-                  stream: channel!.stream,
-                  builder: (context, snapshot) {
-                    return snapshot.hasData
-                        ? Text(
-                            snapshot.data,
-                            style: const TextStyle(fontSize: 18),
-                          )
-                        : const Text('');
-                  })
+              Text(
+                status,
+                style: const TextStyle(fontSize: 18),
+              ),
+              Expanded(
+                  child: ListView.builder(
+                      itemCount: message.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16, horizontal: 25),
+                          child: Text(message[index]),
+                        );
+                      }))
+              // StreamBuilder(
+              //     stream: channel!.stream,
+              //     builder: (context, snapshot) {
+              //       return snapshot.hasData
+              //           ? Text(
+              //               snapshot.data,
+              //               style: const TextStyle(fontSize: 18),
+              //             )
+              //           : const Text('');
+              //     })
             ],
           ),
         ),
       ),
     );
+  }
+
+  void messageListner(String m) {
+    setState(() {
+      message.add(m);
+    });
+  }
+
+  void connectionListner(bool connected) {
+    setState(() {
+      status =
+          'Status :${connected ? 'Connected' : 'Failed to connect to server'}';
+    });
   }
 }
