@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "664807760857",
+    "project_id": "chatpushnotification-b60f1",
+    "storage_bucket": "chatpushnotification-b60f1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:664807760857:android:a674e779e3669186476fc8",
+        "android_client_info": {
+          "package_name": "com.example.socket_io_basics"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbAaIfnO1YKAlsVhw6dogjwMTDwWXAx34"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
