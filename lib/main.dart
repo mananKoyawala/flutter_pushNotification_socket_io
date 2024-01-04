@@ -54,7 +54,7 @@ onTerminatedNotificationHandler() async {
       await FirebaseMessaging.instance.getInitialMessage();
 
   if (message != null) {
-    Future.delayed(const Duration(milliseconds: 50), () {
+    Future.delayed(const Duration(milliseconds: 0), () {
       Navigator.push(
           nKey.currentContext!,
           MaterialPageRoute(
