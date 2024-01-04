@@ -11,22 +11,17 @@ import 'firebase_options.dart';
 //function to lisen to background changes
 final nKey = GlobalKey<NavigatorState>();
 
-Future _firebaseBackgroundMessage(RemoteMessage message) async {
+// To Handle Background Notifications
+Future firebaseBackgroundMessage(RemoteMessage message) async {
   if (message.notification != null) {
-    print("Notification is received: ");
+    // print("Notification is received: ");
   }
 }
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
+firebaseNotificationHandler() async {
   //on background notification tapped
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
     if (message.notification != null) {
-      print('Background Notification Tapped');
       Navigator.push(
           nKey.currentContext!,
           MaterialPageRoute(
@@ -38,12 +33,11 @@ void main() async {
 
   PushNotifications.intt();
   PushNotifications.localNotiInit();
-  FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundMessage);
+  FirebaseMessaging.onBackgroundMessage(firebaseBackgroundMessage);
 
   //Foreground notifications
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     String payloadData = jsonEncode(message.data);
-    print('Got the message');
     if (message.notification != null) {
       PushNotifications.showSimpleNotification(
           title: message.notification!.title!,
@@ -52,13 +46,15 @@ void main() async {
     }
   });
 
+  // Notification tapped when app is terminated
+}
+
+onTerminatedNotificationHandler() async {
   final RemoteMessage? message =
       await FirebaseMessaging.instance.getInitialMessage();
 
   if (message != null) {
-    print("Launched from terminated state");
-    // Fluttertoast.showToast(msg: "Lauched in Terminated State");
-    Future.delayed(Duration(milliseconds: 50), () {
+    Future.delayed(const Duration(milliseconds: 50), () {
       Navigator.push(
           nKey.currentContext!,
           MaterialPageRoute(
@@ -67,6 +63,18 @@ void main() async {
                   )));
     });
   }
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // When app is terminated state
+  onTerminatedNotificationHandler();
+
+  firebaseNotificationHandler();
 
   runApp(const MyApp());
 }
@@ -93,7 +101,7 @@ class HomeScreen extends StatelessWidget {
       backgroundColor: Colors.red,
       body: Container(
         alignment: Alignment.center,
-        child: Text(
+        child: const Text(
           'Hello',
           style: TextStyle(fontSize: 30, color: Colors.white),
         ),
